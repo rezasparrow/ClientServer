@@ -15,7 +15,11 @@ import java.io.IOException;
  * Created by Dotin School1 on 4/9/2016.
  */
 public class TerminalFileManger {
-    public static Terminal parseInput() throws ParserConfigurationException, IOException, SAXException {
+
+    private String outLogPath;
+    private Terminal terminal;
+
+    public TerminalFileManger() throws ParserConfigurationException, IOException, SAXException {
 
         File inputFile = new File("terminal.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -34,9 +38,9 @@ public class TerminalFileManger {
         ServerInformation serverInformation = new ServerInformation(serverIp, serverPort);
 
         Node outLog = doc.getElementsByTagName("outLog").item(0);
-        String outLogPath = outLog.getAttributes().getNamedItem("path").getNodeValue();
+        this.outLogPath = outLog.getAttributes().getNamedItem("path").getNodeValue();
 
-        Terminal terminal = new Terminal(id,type, serverInformation , outLogPath);
+        this.terminal = new Terminal(id, type, serverInformation);
 
         NodeList transactions = doc.getElementsByTagName("transaction");
         System.out.println("----------------------------");
@@ -49,11 +53,22 @@ public class TerminalFileManger {
                 String amount = transaction.getAttributes().getNamedItem("amount").getNodeValue();
                 String deposit = transaction.getAttributes().getNamedItem("deposit").getNodeValue();
 
-                terminal.addTransaction(new Transaction(transactionId ,  transactionType , Integer.parseInt(amount.replace("," , "")) , deposit));
+                terminal.addTransaction(new Transaction(transactionId, transactionType, Integer.parseInt(amount.replace(",", "")), deposit));
             }
         }
 
 
+    }
+
+    public String getOutLogPath() {
+        return outLogPath;
+    }
+
+    public Terminal getTerminal() {
         return terminal;
+    }
+
+    public void setOutLogPath(String outLogPath) {
+        this.outLogPath = outLogPath;
     }
 }

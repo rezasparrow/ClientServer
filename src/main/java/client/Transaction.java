@@ -16,6 +16,16 @@ public class Transaction {
         this.deposit = deposit;
     }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                ", amount=" + amount +
+                ", deposit='" + deposit + '\'' +
+                "}";
+    }
+
     public String getId() {
         return id;
     }

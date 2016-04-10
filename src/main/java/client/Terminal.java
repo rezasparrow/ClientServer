@@ -10,19 +10,20 @@ public class Terminal {
     String id;
     String type;
     ServerInformation serverInformation;
-    String outLogPath;
     List<Transaction> transactions;
 
-    public Terminal(String id, String type, ServerInformation serverInformation, String outLogPath) {
+    public Terminal(String id, String type, ServerInformation serverInformation) {
         this.id = id;
         this.type = type;
         this.serverInformation = serverInformation;
-        this.outLogPath = outLogPath;
 
         this.transactions = new ArrayList<Transaction>();
 
     }
 
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
 
     public void addTransaction(Transaction transaction){
         transactions.add(transaction);
