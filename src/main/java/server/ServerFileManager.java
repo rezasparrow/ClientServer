@@ -35,16 +35,9 @@ public class ServerFileManager {
             JSONObject deposit = (JSONObject) depositObject;
 
             String customer = (String) deposit.get("customer");
-            System.out.println(customer);
-
-            String id = (String) deposit.get("id");
-            System.out.println(id);
-
+            String id =  deposit.get("id").toString();
             Integer initialBalance = Integer.parseInt( deposit.get("initialBalance").toString().replace("," , ""));
-            System.out.println(initialBalance);
-
             Integer upperBalance = Integer.parseInt( deposit.get("upperBound").toString().replace("," , ""));
-            System.out.println(upperBalance);
 
             this.deposits.add(new Deposit(customer ,id ,initialBalance ,upperBalance));
         }

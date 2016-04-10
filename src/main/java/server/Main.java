@@ -16,7 +16,5 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) throws IOException, ParseException {
-        ServerFileManager serverFileManager = new ServerFileManager();
-        List<Deposit> deposits = serverFileManager.getDeposits();
     }
 }

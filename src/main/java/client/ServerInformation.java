@@ -5,9 +5,9 @@ package client;
  */
 public class ServerInformation {
     private String ip;
-    private String port;
+    private Integer port;
 
-    public ServerInformation(String ip, String port) {
+    public ServerInformation(String ip, Integer port) {
         this.ip = ip;
         this.port = port;
     }
@@ -16,7 +16,7 @@ public class ServerInformation {
         return ip;
     }
 
-    public String getPort() {
+    public Integer getPort() {
         return port;
     }
 }

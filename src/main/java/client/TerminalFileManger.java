@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.net.Inet4Address;
 
 /**
  * Created by Dotin School1 on 4/9/2016.
@@ -34,7 +35,7 @@ public class TerminalFileManger {
 
         Node serverInfoNode = doc.getElementsByTagName("server").item(0);
         String serverIp = serverInfoNode.getAttributes().getNamedItem("ip").getNodeValue();
-        String serverPort = serverInfoNode.getAttributes().getNamedItem("port").getNodeValue();
+        Integer serverPort = Integer.parseInt(serverInfoNode.getAttributes().getNamedItem("port").getNodeValue());
         ServerInformation serverInformation = new ServerInformation(serverIp, serverPort);
 
         Node outLog = doc.getElementsByTagName("outLog").item(0);
