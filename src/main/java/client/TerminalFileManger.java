@@ -13,11 +13,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.Inet4Address;
 
-/**
- * Created by Dotin School1 on 4/9/2016.
- */
+
 public class TerminalFileManger {
 
     private BufferedWriter logFile;
@@ -45,7 +42,7 @@ public class TerminalFileManger {
         String outLogPath = outLog.getAttributes().getNamedItem("path").getNodeValue();
         this.logFile = new BufferedWriter(new FileWriter(outLogPath));
 
-        this.terminal = new Terminal(id, type, serverInformation);
+        this.terminal = new Terminal(id, type, serverInformation , this);
 
         NodeList transactions = doc.getElementsByTagName("transaction");
         System.out.println("----------------------------");
@@ -66,16 +63,20 @@ public class TerminalFileManger {
     }
 
 
-
     public Terminal getTerminal() {
         return terminal;
     }
 
-    public void addLog(String message){
-        throw new NotImplementedException();
+    public synchronized void addLog(String transaction , String message) throws IOException {
+        Long currentTime = System.currentTimeMillis();
+        logFile.write(String.format(" time=\"%s\"\t" +
+                "transaction =  %s\t"+
+                "serverMessage = %s\t" ,currentTime.toString() , transaction , message));
+        logFile.newLine();
+
     }
-
-    public void close(){
-
+    public void close() throws IOException {
+        logFile.flush();
+        logFile.close();
     }
 }

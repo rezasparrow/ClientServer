@@ -19,10 +19,10 @@ public class Transaction {
     @Override
     public String toString() {
         return "{" +
-                "id='" + id + '\'' +
-                ", type='" + type + '\'' +
-                ", amount=" + amount +
-                ", deposit='" + deposit + '\'' +
+                "\"id\":\"" + id + '\"' +
+                ", \"type\":\"" + type + '\"' +
+                ", \"amount\":" + amount +
+                ", \"deposit\":\"" + deposit + '\"' +
                 "}";
     }
 

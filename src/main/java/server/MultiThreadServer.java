@@ -65,12 +65,12 @@ public class MultiThreadServer implements Runnable {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(message);
 
-        String type = jsonObject.get("type").toString();
+        String type = jsonObject.get("type").toString().trim();
         Integer amount = Integer.parseInt(jsonObject.get("amount").toString());
         String depositId = jsonObject.get("deposit").toString();
 
         Deposit deposit = findDeposit(depositId);
-        Method method = Deposit.class.getMethod(type , new Class[]{String.class});
+        Method method = Deposit.class.getDeclaredMethod(type , new Class[]{Integer.TYPE});
         method.invoke(deposit , amount);
     }
 
@@ -83,11 +83,15 @@ public class MultiThreadServer implements Runnable {
 
                 String processState = "failed";
                 String request = dataInputStream.readUTF();
+                System.out.println(dataInputStream.available());
                 serverFileManager.addStartTransactionLog(request , terminalId , terminalType);
 
+                boolean finishSuccess = false;
                 try {
                     processRequest(request);
+                    serverFileManager.addFinishTransactionSuccessLog(request , terminalId , terminalType);
                     dataOutputStream.writeUTF("transaction done");
+                    finishSuccess = true;
                 } catch (ParseException e) {
                     dataOutputStream.writeUTF("transaction format is invalid");
                 } catch (TransactionInvalidException e) {
@@ -100,10 +104,12 @@ public class MultiThreadServer implements Runnable {
                 } catch (IllegalAccessException e) {
                     dataOutputStream.writeUTF("transaction type is invalid");
                 }
-
+                if(! finishSuccess){
+                    serverFileManager.addFinishTransactionFailedLog(request , terminalId , terminalType);
+                }
             }
         }  catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Close connection");
         } finally {
             try {
                 terminalSocket.close();

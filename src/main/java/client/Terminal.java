@@ -1,5 +1,7 @@
 package client;
 
+import server.ServerFileManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.net.*;
@@ -17,13 +19,15 @@ public class Terminal {
     private Socket  client;
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
+    private TerminalFileManger terminalFileManger;
 
-    public Terminal(String id, String type, ServerInformation serverInformation) {
+    public Terminal(String id, String type, ServerInformation serverInformation , TerminalFileManger terminalFileManger) {
         this.id = id;
         this.type = type;
         this.serverInformation = serverInformation;
 
         this.transactions = new ArrayList<Transaction>();
+        this.terminalFileManger = terminalFileManger;
 
     }
 
@@ -45,12 +49,15 @@ public class Terminal {
         dataInputStream = new DataInputStream(inputStream);
 
         // send terminal info
-        dataOutputStream.writeUTF(String.format("{\"id\" :%s ,\"type\" :%s  }" , this.id , this.type));
+        dataOutputStream.writeUTF(String.format("{\"id\" :\"%s\" ,\"type\" :\"%s\" }" , this.id , this.type));
     }
 
-    public String sendData(String Data) throws IOException {
-        dataOutputStream.writeUTF(Data);
-        return dataInputStream.readUTF();
+    public String sendData(String data) throws IOException {
+        dataOutputStream.writeUTF(data);
+        String message =  dataInputStream.readUTF();
+
+        terminalFileManger.addLog(data , message);
+        return message;
     }
 
     public void closeConnection() throws IOException {

@@ -32,20 +32,23 @@ public class Deposit {
         return upperBalance;
     }
 
-    public synchronized void deposit(Integer amount) throws Exception {
-
-        if((initBalance + amount) > upperBalance){
-            throw new Exception();
+    public  void deposit(int amount) throws Exception {
+        synchronized (this){
+            if((initBalance + amount) > upperBalance){
+                throw new Exception();
+            }
+            initBalance += amount;
         }
-        initBalance += amount;
     }
 
-    public synchronized void withdraw(Integer amount) throws Exception {
+    public  void withdraw(int amount) throws Exception {
+        synchronized (this){
 
             if((initBalance - amount) < 0){
                 throw new Exception();
             }
             initBalance -= amount;
+        }
     }
 
 

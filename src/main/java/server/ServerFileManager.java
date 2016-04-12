@@ -72,8 +72,9 @@ public class ServerFileManager {
         logFile.newLine();
         logFile.write(String.format("<transaction> \n %s <\\transaction>" , transaction));
         logFile.newLine();
-        logFile.write(String.format("<terminalInfo id=\"%s\"  type=\"%s\"> \n+ %s <\\transaction>" , terminalId , terminalType));
+        logFile.write(String.format("<terminalInfo id=\"%s\"  type=\"%s\"> \n+ </transaction>" , terminalId , terminalType));
         logFile.newLine();
+        logFile.write("</request>");
 
     }
 
@@ -92,6 +93,10 @@ public class ServerFileManager {
 
 
     public void close() throws IOException {
+        logFile.write("</serverLog>");
+        logFile.newLine();
+        logFile.write("</requests>");
+        logFile.flush();
         logFile.close();
     }
 
