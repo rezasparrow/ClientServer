@@ -65,16 +65,10 @@ public class TerminalFileManger {
 
     }
 
-    public String getOutLogPath() {
-        return outLogPath;
-    }
+
 
     public Terminal getTerminal() {
         return terminal;
-    }
-
-    public void setOutLogPath(String outLogPath) {
-        this.outLogPath = outLogPath;
     }
 
     public void addLog(String message){
