@@ -5,8 +5,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.rmi.runtime.Log;
 
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +20,22 @@ import java.util.List;
  */
 public class ServerFileManager {
 
-    private String port;
-    private String outLog;
+    private Integer port;
+
     private List<Deposit> deposits;
+
+    private BufferedWriter logFile;
 
     public ServerFileManager() throws IOException, ParseException {
 
         this.deposits = new ArrayList<Deposit>();
 
+
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(new FileReader("core.json"));
 
-        port = jsonObject.get("port").toString();
-        outLog = jsonObject.get("outLog").toString();
+        port = Integer.parseInt(jsonObject.get("port").toString());
+        String outLog = jsonObject.get("outLog").toString();
 
         JSONArray deposits = (JSONArray) jsonObject.get("deposits");
         for (Object depositObject : deposits) {
@@ -41,17 +48,51 @@ public class ServerFileManager {
 
             this.deposits.add(new Deposit(customer ,id ,initialBalance ,upperBalance));
         }
+        initLogger(outLog);
     }
 
-    public String getPort() {
+    private void initLogger(String logFilePath) throws IOException {
+        this.logFile = new BufferedWriter(new FileWriter(logFilePath));
+        logFile.write("<serverLog>");
+        logFile.newLine();
+        logFile.write("<requests>");
+
+    }
+
+    public Integer getPort() {
         return port;
-    }
-
-    public String getOutLog() {
-        return outLog;
     }
 
     public List<Deposit> getDeposits() {
         return deposits;
     }
+
+    private synchronized void addLog(String transaction , String terminalId, String terminalType , String mode  , String status) throws IOException {
+        logFile.write(String.format("<request mode=\"\" status=\"%s\" time = \"%s\"   >" , mode , status ,  System.currentTimeMillis() , transaction  ));
+        logFile.newLine();
+        logFile.write(String.format("<transaction> \n %s <\\transaction>" , transaction));
+        logFile.newLine();
+        logFile.write(String.format("<terminalInfo id=\"%s\"  type=\"%s\"> \n+ %s <\\transaction>" , terminalId , terminalType));
+        logFile.newLine();
+
+    }
+
+
+    public void addStartTransactionLog(String transaction , String terminalId, String terminalType) throws IOException {
+        addLog(transaction , terminalId , terminalType , "start" , "");
+    }
+
+    public void addFinishTransactionFailedLog(String transaction , String terminalId, String terminalType) throws IOException {
+        addLog(transaction , terminalId , terminalType , "finish" , "failed");
+    }
+
+    public void addFinishTransactionSuccessLog(String transaction , String terminalId, String terminalType) throws IOException {
+        addLog(transaction , terminalId , terminalType , "finish" , "success");
+    }
+
+
+    public void close() throws IOException {
+        logFile.close();
+    }
+
 }

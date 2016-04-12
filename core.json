@@ -13,5 +13,6 @@
       "initialBalance" : "0",
       "upperBound" : "0"
     }
-  ]
+  ] ,
+  "outLog" : "server.out"
 }

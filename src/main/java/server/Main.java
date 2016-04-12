@@ -1,14 +1,11 @@
 package server;
 
-;import jdk.nashorn.api.scripting.JSObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.List;
 
 /**
@@ -16,5 +13,14 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) throws IOException, ParseException {
+        ServerFileManager serverFileManager = new ServerFileManager();
+        List<Deposit> deposits = serverFileManager.getDeposits();
+        ServerSocket serverSocket = new ServerSocket(serverFileManager.getPort());
+        serverSocket.setSoTimeout(10000);
+        while (true) {
+            Socket sock = serverSocket.accept();
+            System.out.println("Connected");
+            new Thread(new MultiThreadServer(sock , deposits)).start();
+        }
     }
 }

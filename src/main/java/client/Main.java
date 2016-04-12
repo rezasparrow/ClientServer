@@ -10,9 +10,13 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
-        Terminal terminal = TerminalFileManger.parseInput();
+        TerminalFileManger terminalFileManger = new TerminalFileManger();
+        Terminal terminal = terminalFileManger.getTerminal();
+        terminal.connectToServer();
         for(Transaction transaction : terminal.getTransactions()){
-            System.out.println(transaction);
+            System.out.println(terminal.sendData(transaction.toString()));
+            return;
         }
+        terminal.closeConnection();
     }
 }

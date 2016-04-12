@@ -43,6 +43,9 @@ public class Terminal {
 
         InputStream inputStream =  client.getInputStream();
         dataInputStream = new DataInputStream(inputStream);
+
+        // send terminal info
+        dataOutputStream.writeUTF(String.format("{\"id\" :%s ,\"type\" :%s  }" , this.id , this.type));
     }
 
     public String sendData(String Data) throws IOException {

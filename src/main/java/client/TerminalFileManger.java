@@ -4,11 +4,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Inet4Address;
 
@@ -17,7 +20,7 @@ import java.net.Inet4Address;
  */
 public class TerminalFileManger {
 
-    private String outLogPath;
+    private BufferedWriter logFile;
     private Terminal terminal;
 
     public TerminalFileManger() throws ParserConfigurationException, IOException, SAXException {
@@ -39,7 +42,8 @@ public class TerminalFileManger {
         ServerInformation serverInformation = new ServerInformation(serverIp, serverPort);
 
         Node outLog = doc.getElementsByTagName("outLog").item(0);
-        this.outLogPath = outLog.getAttributes().getNamedItem("path").getNodeValue();
+        String outLogPath = outLog.getAttributes().getNamedItem("path").getNodeValue();
+        this.logFile = new BufferedWriter(new FileWriter(outLogPath));
 
         this.terminal = new Terminal(id, type, serverInformation);
 
@@ -71,5 +75,13 @@ public class TerminalFileManger {
 
     public void setOutLogPath(String outLogPath) {
         this.outLogPath = outLogPath;
+    }
+
+    public void addLog(String message){
+        throw new NotImplementedException();
+    }
+
+    public void close(){
+
     }
 }
