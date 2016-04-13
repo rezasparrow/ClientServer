@@ -23,9 +23,8 @@ public class ServerFileManager {
     private Integer port;
 
     private List<Deposit> deposits;
-
     private BufferedWriter logFile;
-
+    private Object lockLogFile = new Object();
     public ServerFileManager() throws IOException, ParseException {
 
         this.deposits = new ArrayList<Deposit>();
@@ -53,9 +52,6 @@ public class ServerFileManager {
 
     private void initLogger(String logFilePath) throws IOException {
         this.logFile = new BufferedWriter(new FileWriter(logFilePath));
-        logFile.write("<serverLog>");
-        logFile.newLine();
-        logFile.write("<requests>");
 
     }
 
@@ -67,15 +63,14 @@ public class ServerFileManager {
         return deposits;
     }
 
-    private synchronized void addLog(String transaction , String terminalId, String terminalType , String mode  , String status) throws IOException {
-        logFile.write(String.format("<request mode=\"\" status=\"%s\" time = \"%s\"   >" , mode , status ,  System.currentTimeMillis() , transaction  ));
-        logFile.newLine();
-        logFile.write(String.format("<transaction> \n %s <\\transaction>" , transaction));
-        logFile.newLine();
-        logFile.write(String.format("<terminalInfo id=\"%s\"  type=\"%s\"> \n+ </transaction>" , terminalId , terminalType));
-        logFile.newLine();
-        logFile.write("</request>");
-
+    private void addLog(String transaction , String terminalId, String terminalType , String mode  , String status) throws IOException {
+        synchronized (logFile){
+            logFile.write(String.format("mode=\"%s\" status=\"%s\" time = \"%s\"  " , mode , status ,  System.currentTimeMillis()   ));
+            logFile.write(String.format("transaction=  %s " , transaction));
+            logFile.write(String.format("terminalId=\"%s\"  terminalType=\"%s\"" , terminalId , terminalType));
+            logFile.newLine();
+            logFile.flush();
+        }
     }
 
 
@@ -93,9 +88,6 @@ public class ServerFileManager {
 
 
     public void close() throws IOException {
-        logFile.write("</serverLog>");
-        logFile.newLine();
-        logFile.write("</requests>");
         logFile.flush();
         logFile.close();
     }

@@ -52,11 +52,14 @@ public class Terminal {
         dataOutputStream.writeUTF(String.format("{\"id\" :\"%s\" ,\"type\" :\"%s\" }" , this.id , this.type));
     }
 
-    public String sendData(String data) throws IOException {
-        dataOutputStream.writeUTF(data);
+    public String requestTransaction(Transaction transaction) throws IOException {
+        dataOutputStream.writeUTF(transaction.toString());
+        terminalFileManger.addSendLog(transaction);
+
         String message =  dataInputStream.readUTF();
 
-        terminalFileManger.addLog(data , message);
+        terminalFileManger.addResponseLog(transaction , message);
+        terminalFileManger.addServerResponse(transaction, message);
         return message;
     }
 

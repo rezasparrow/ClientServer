@@ -1,7 +1,6 @@
 package client;
 
 import org.xml.sax.SAXException;
-import server.ServerFileManager;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -15,10 +14,9 @@ public class RunClient {
         Terminal terminal = terminalFileManger.getTerminal();
         terminal.connectToServer();
         for(Transaction transaction : terminal.getTransactions()){
-            System.out.println("request : ");
             System.out.println(transaction);
-            System.out.println("response :");
-            System.out.println(terminal.sendData(transaction.toString()));
+            String responseMessage = terminal.requestTransaction(transaction);
+            System.out.println(responseMessage);
         }
         terminal.closeConnection();
         terminalFileManger.close();

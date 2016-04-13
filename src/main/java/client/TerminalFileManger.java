@@ -20,6 +20,8 @@ public class TerminalFileManger {
     private BufferedWriter logFile;
     private Terminal terminal;
 
+    private BufferedWriter responseLog;
+
     public TerminalFileManger() throws ParserConfigurationException, IOException, SAXException {
 
         File inputFile = new File("terminal.xml");
@@ -58,7 +60,8 @@ public class TerminalFileManger {
                 terminal.addTransaction(new Transaction(transactionId, transactionType, Integer.parseInt(amount.replace(",", "")), deposit));
             }
         }
-
+        responseLog = new BufferedWriter(new FileWriter("response.xml"));
+        responseLog.write("<responses>");
 
     }
 
@@ -67,15 +70,36 @@ public class TerminalFileManger {
         return terminal;
     }
 
-    public synchronized void addLog(String transaction , String message) throws IOException {
+    public synchronized void addSendLog(Transaction transaction ) throws IOException {
         Long currentTime = System.currentTimeMillis();
-        logFile.write(String.format(" time=\"%s\"\t" +
-                "transaction =  %s\t"+
-                "serverMessage = %s\t" ,currentTime.toString() , transaction , message));
+        logFile.write(String.format("send at time=\"%s\"\t" +
+                "transaction =  %s\t" ,currentTime.toString() , transaction ));
         logFile.newLine();
 
     }
+    public synchronized void addResponseLog(Transaction transaction , String  serverMessage) throws IOException {
+        Long currentTime = System.currentTimeMillis();
+        logFile.write(String.format("response at time=\"%s\"\t" +
+                "transactionId =  %s\t"+
+                "serverMessage = %s\t" ,currentTime.toString() ,transaction.getId() , serverMessage ));
+        logFile.newLine();
+
+    }
+
+    public void addServerResponse(Transaction transaction , String serverMessage) throws IOException {
+        responseLog.write(String.format("<response  time = \"%s\"   > \n"   ,  System.currentTimeMillis()   ));
+        responseLog.newLine();
+        responseLog.write(String.format("<transaction> \n %s \n</transaction>" , transaction));
+        responseLog.newLine();
+        responseLog.write(String.format("<serverMessage  >\n %s\n </serverMessage>" , serverMessage));
+        responseLog.newLine();
+        responseLog.write("\n</response>");
+    }
+
     public void close() throws IOException {
+        responseLog.write("</responses>");
+        responseLog.flush();
+        responseLog.close();
         logFile.flush();
         logFile.close();
     }

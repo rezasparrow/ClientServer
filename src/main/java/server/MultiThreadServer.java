@@ -74,6 +74,13 @@ public class MultiThreadServer implements Runnable {
         method.invoke(deposit , amount);
     }
 
+    private void sendSuccessResponseMessage(String responseMessage) throws IOException {
+        dataOutputStream.writeUTF((char)27 + "[32m" +responseMessage  + (char)27 + "[0m");
+    }
+
+    private void sendFailedResponseMessage(String responseMessage) throws IOException {
+        dataOutputStream.writeUTF((char)27 + "[31m" +responseMessage  + (char)27 + "[0m");
+    }
 
     public void run() {
 
@@ -83,26 +90,27 @@ public class MultiThreadServer implements Runnable {
 
                 String processState = "failed";
                 String request = dataInputStream.readUTF();
-                System.out.println(dataInputStream.available());
+//                System.out.println(dataInputStream.available());
                 serverFileManager.addStartTransactionLog(request , terminalId , terminalType);
 
                 boolean finishSuccess = false;
                 try {
                     processRequest(request);
                     serverFileManager.addFinishTransactionSuccessLog(request , terminalId , terminalType);
-                    dataOutputStream.writeUTF("transaction done");
+                    sendSuccessResponseMessage("transaction done");
                     finishSuccess = true;
                 } catch (ParseException e) {
-                    dataOutputStream.writeUTF("transaction format is invalid");
+                    sendFailedResponseMessage("transaction format is invalid");
                 } catch (TransactionInvalidException e) {
-                    dataOutputStream.writeUTF(e.getMessage());
+                    sendFailedResponseMessage(e.getMessage());
                 } catch (NoSuchMethodException e) {
-                    dataOutputStream.writeUTF("transaction type is invalid");
+                    sendFailedResponseMessage("transaction type is invalid");
                 } catch (InvocationTargetException e) {
-                    dataOutputStream.writeUTF(e.getCause().getMessage());
+                    System.out.println(e.getCause().getMessage());
+                    sendFailedResponseMessage(e.getCause().getMessage());
 
                 } catch (IllegalAccessException e) {
-                    dataOutputStream.writeUTF("transaction type is invalid");
+                    sendFailedResponseMessage("transaction type is invalid");
                 }
                 if(! finishSuccess){
                     serverFileManager.addFinishTransactionFailedLog(request , terminalId , terminalType);
