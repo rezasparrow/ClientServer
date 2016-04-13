@@ -10,7 +10,11 @@ import java.io.IOException;
  */
 public class RunClient {
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
-        TerminalFileManger terminalFileManger = new TerminalFileManger();
+        String terminalPath = "terminal.xml";
+        if(args.length == 1){
+            terminalPath = args[0];
+        }
+        TerminalFileManger terminalFileManger = new TerminalFileManger(terminalPath);
         Terminal terminal = terminalFileManger.getTerminal();
         terminal.connectToServer();
         for(Transaction transaction : terminal.getTransactions()){

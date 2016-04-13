@@ -22,9 +22,9 @@ public class TerminalFileManger {
 
     private BufferedWriter responseLog;
 
-    public TerminalFileManger() throws ParserConfigurationException, IOException, SAXException {
+    public TerminalFileManger(String terminalPath ) throws ParserConfigurationException, IOException, SAXException {
 
-        File inputFile = new File("terminal.xml");
+        File inputFile = new File(terminalPath);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(inputFile);

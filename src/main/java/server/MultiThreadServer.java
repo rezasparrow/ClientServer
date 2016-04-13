@@ -5,23 +5,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import util.TransactionInvalidException;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
 
-/**
- * Created by Dotin School1 on 4/10/2016.
- */
-public class MultiThreadServer implements Runnable {
+public class MultiThreadServer implements Runnable   {
     private Socket terminalSocket;
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
@@ -32,8 +23,8 @@ public class MultiThreadServer implements Runnable {
     private String terminalId;
 
 
-    public MultiThreadServer(Socket socket , List<Deposit> deposits , ServerFileManager serverFileManager) throws IOException, ParseException {
-        terminalSocket = socket;
+    public MultiThreadServer(ServerSocket serverSocket, List<Deposit> deposits , ServerFileManager serverFileManager) throws IOException, ParseException {
+        terminalSocket = serverSocket.accept();
         dataOutputStream = new DataOutputStream(terminalSocket.getOutputStream());
         dataInputStream = new DataInputStream(terminalSocket.getInputStream());
         this.serverFileManager = serverFileManager;
@@ -88,9 +79,7 @@ public class MultiThreadServer implements Runnable {
         try {
             while (true) {
 
-                String processState = "failed";
                 String request = dataInputStream.readUTF();
-//                System.out.println(dataInputStream.available());
                 serverFileManager.addStartTransactionLog(request , terminalId , terminalType);
 
                 boolean finishSuccess = false;
@@ -106,9 +95,7 @@ public class MultiThreadServer implements Runnable {
                 } catch (NoSuchMethodException e) {
                     sendFailedResponseMessage("transaction type is invalid");
                 } catch (InvocationTargetException e) {
-                    System.out.println(e.getCause().getMessage());
                     sendFailedResponseMessage(e.getCause().getMessage());
-
                 } catch (IllegalAccessException e) {
                     sendFailedResponseMessage("transaction type is invalid");
                 }
@@ -120,12 +107,15 @@ public class MultiThreadServer implements Runnable {
             System.out.println("Close connection");
         } finally {
             try {
-                terminalSocket.close();
+                close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    public void close() throws IOException {
+        terminalSocket.close();
+    }
 }
 
